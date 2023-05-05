@@ -71,7 +71,8 @@ abstract class CircleListChildDelegate {
 /// conditions.
 class CircleListChildListDelegate extends CircleListChildDelegate {
   /// Constructs the delegate from a concrete list of children.
-  CircleListChildListDelegate({required this.children}) : assert(children != null);
+  CircleListChildListDelegate({required this.children})
+      : assert(children != null);
 
   /// The list containing all children that can be supplied.
   final List<Widget> children;
@@ -81,8 +82,7 @@ class CircleListChildListDelegate extends CircleListChildDelegate {
 
   @override
   Widget? build(BuildContext context, int index) {
-    if (index < 0 || index >= children.length)
-      return null;
+    if (index < 0 || index >= children.length) return null;
     return IndexedSemantics(child: children[index], index: index);
   }
 
@@ -114,7 +114,8 @@ class CircleListChildListDelegate extends CircleListChildDelegate {
 /// conditions.
 class CircleListChildLoopingListDelegate extends CircleListChildDelegate {
   /// Constructs the delegate from a concrete list of children.
-  CircleListChildLoopingListDelegate({required this.children}) : assert(children != null);
+  CircleListChildLoopingListDelegate({required this.children})
+      : assert(children != null);
 
   /// The list containing all children that can be supplied.
   final List<Widget> children;
@@ -127,9 +128,9 @@ class CircleListChildLoopingListDelegate extends CircleListChildDelegate {
 
   @override
   Widget? build(BuildContext context, int index) {
-    if (children.isEmpty)
-      return null;
-    return IndexedSemantics(child: children[index % children.length], index: index);
+    if (children.isEmpty) return null;
+    return IndexedSemantics(
+        child: children[index % children.length], index: index);
   }
 
   @override
@@ -172,16 +173,18 @@ class CircleListChildBuilderDelegate extends CircleListChildDelegate {
   Widget? build(BuildContext context, int index) {
     if (childCount == null) {
       final Widget child = builder(context, index);
-      return child == null ? null : IndexedSemantics(child: child, index: index);
+      return child == null
+          ? null
+          : IndexedSemantics(child: child, index: index);
     }
-    if (index < 0 || index >= childCount!)
-      return null;
+    if (index < 0 || index >= childCount!) return null;
     return IndexedSemantics(child: builder(context, index), index: index);
   }
 
   @override
   bool shouldRebuild(covariant CircleListChildBuilderDelegate oldDelegate) {
-    return builder != oldDelegate.builder || childCount != oldDelegate.childCount;
+    return builder != oldDelegate.builder ||
+        childCount != oldDelegate.childCount;
   }
 }
 
@@ -234,7 +237,8 @@ class FixedExtentScrollController extends ScrollController {
       'The selectedItem property cannot be read when multiple scroll views are '
       'attached to the same FixedExtentScrollController.',
     );
-    final _FixedExtentScrollPosition position = this.position as _FixedExtentScrollPosition;
+    final _FixedExtentScrollPosition position =
+        this.position as _FixedExtentScrollPosition;
     return position.itemIndex;
   }
 
@@ -244,7 +248,8 @@ class FixedExtentScrollController extends ScrollController {
   /// The returned [Future] resolves when the animation completes.
   ///
   /// The `duration` and `curve` arguments must not be null.
-  Future<void> animateToItem(int itemIndex, {
+  Future<void> animateToItem(
+    int itemIndex, {
     required Duration duration,
     required Curve curve,
   }) async {
@@ -253,7 +258,8 @@ class FixedExtentScrollController extends ScrollController {
     }
 
     final List<Future<void>> futures = <Future<void>>[];
-    for (_FixedExtentScrollPosition position in positions as Iterable<_FixedExtentScrollPosition>) {
+    for (_FixedExtentScrollPosition position
+        in positions as Iterable<_FixedExtentScrollPosition>) {
       futures.add(position.animateTo(
         itemIndex * position.itemExtent,
         duration: duration,
@@ -268,13 +274,15 @@ class FixedExtentScrollController extends ScrollController {
   /// Jumps the item index position from its current value to the given value,
   /// without animation, and without checking if the new value is in range.
   void jumpToItem(int itemIndex) {
-    for (_FixedExtentScrollPosition position in positions as Iterable<_FixedExtentScrollPosition>) {
+    for (_FixedExtentScrollPosition position
+        in positions as Iterable<_FixedExtentScrollPosition>) {
       position.jumpTo(itemIndex * position.itemExtent);
     }
   }
 
   @override
-  ScrollPosition createScrollPosition(ScrollPhysics physics, ScrollContext context, ScrollPosition? oldPosition) {
+  ScrollPosition createScrollPosition(ScrollPhysics physics,
+      ScrollContext context, ScrollPosition? oldPosition) {
     return _FixedExtentScrollPosition(
       physics: physics,
       context: context,
@@ -304,12 +312,12 @@ class FixedExtentMetrics extends FixedScrollMetrics {
     required AxisDirection axisDirection,
     required this.itemIndex,
   }) : super(
-         minScrollExtent: minScrollExtent,
-         maxScrollExtent: maxScrollExtent,
-         pixels: pixels,
-         viewportDimension: viewportDimension,
-         axisDirection: axisDirection,
-       );
+          minScrollExtent: minScrollExtent,
+          maxScrollExtent: maxScrollExtent,
+          pixels: pixels,
+          viewportDimension: viewportDimension,
+          axisDirection: axisDirection,
+        );
 
   @override
   FixedExtentMetrics copyWith({
@@ -340,20 +348,21 @@ int _getItemFromOffset({
   required double minScrollExtent,
   required double maxScrollExtent,
 }) {
-  return (_clipOffsetToScrollableRange(offset, minScrollExtent, maxScrollExtent) / itemExtent).round();
+  return (_clipOffsetToScrollableRange(
+              offset, minScrollExtent, maxScrollExtent) /
+          itemExtent)
+      .round();
 }
 
 double _clipOffsetToScrollableRange(
-  double offset,
-  double minScrollExtent,
-  double maxScrollExtent
-) {
+    double offset, double minScrollExtent, double maxScrollExtent) {
   return math.min(math.max(offset, minScrollExtent), maxScrollExtent);
 }
 
 /// A [ScrollPositionWithSingleContext] that can only be created based on
 /// [_FixedExtentScrollable] and can access its `itemExtent` to derive [itemIndex].
-class _FixedExtentScrollPosition extends ScrollPositionWithSingleContext implements FixedExtentMetrics {
+class _FixedExtentScrollPosition extends ScrollPositionWithSingleContext
+    implements FixedExtentMetrics {
   _FixedExtentScrollPosition({
     required ScrollPhysics physics,
     required ScrollContext context,
@@ -361,21 +370,20 @@ class _FixedExtentScrollPosition extends ScrollPositionWithSingleContext impleme
     bool keepScrollOffset = true,
     ScrollPosition? oldPosition,
     String? debugLabel,
-  }) : assert(
-         context is _FixedExtentScrollableState,
-         'FixedExtentScrollController can only be used with CircleListScrollViews'
-       ),
-       super(
-         physics: physics,
-         context: context,
-         initialPixels: _getItemExtentFromScrollContext(context) * initialItem,
-         keepScrollOffset: keepScrollOffset,
-         oldPosition: oldPosition,
-         debugLabel: debugLabel,
-       );
+  })  : assert(context is _FixedExtentScrollableState,
+            'FixedExtentScrollController can only be used with CircleListScrollViews'),
+        super(
+          physics: physics,
+          context: context,
+          initialPixels: _getItemExtentFromScrollContext(context) * initialItem,
+          keepScrollOffset: keepScrollOffset,
+          oldPosition: oldPosition,
+          debugLabel: debugLabel,
+        );
 
   static double _getItemExtentFromScrollContext(ScrollContext context) {
-    final _FixedExtentScrollableState scrollable = context as _FixedExtentScrollableState;
+    final _FixedExtentScrollableState scrollable =
+        context as _FixedExtentScrollableState;
     return scrollable.itemExtent;
   }
 
@@ -421,13 +429,13 @@ class _FixedExtentScrollable extends Scrollable {
     ScrollPhysics? physics,
     required this.itemExtent,
     required ViewportBuilder viewportBuilder,
-  }) : super (
-    key: key,
-    axisDirection: axisDirection,
-    controller: controller,
-    physics: physics,
-    viewportBuilder: viewportBuilder,
-  );
+  }) : super(
+          key: key,
+          axisDirection: axisDirection,
+          controller: controller,
+          physics: physics,
+          viewportBuilder: viewportBuilder,
+        );
 
   final double itemExtent;
 
@@ -440,7 +448,8 @@ class _FixedExtentScrollable extends Scrollable {
 class _FixedExtentScrollableState extends ScrollableState {
   double get itemExtent {
     // Downcast because only _FixedExtentScrollable can make _FixedExtentScrollableState.
-    final _FixedExtentScrollable actualWidget = widget as _FixedExtentScrollable;
+    final _FixedExtentScrollable actualWidget =
+        widget as _FixedExtentScrollable;
     return actualWidget.itemExtent;
   }
 }
@@ -457,7 +466,8 @@ class _FixedExtentScrollableState extends ScrollableState {
 /// Defers back to the parent beyond the scroll extents.
 class CircleFixedExtentScrollPhysics extends ScrollPhysics {
   /// Creates a scroll physics that always lands on items.
-  const CircleFixedExtentScrollPhysics({ ScrollPhysics? parent }) : super(parent: parent);
+  const CircleFixedExtentScrollPhysics({ScrollPhysics? parent})
+      : super(parent: parent);
 
   @override
   CircleFixedExtentScrollPhysics applyTo(ScrollPhysics? ancestor) {
@@ -465,14 +475,15 @@ class CircleFixedExtentScrollPhysics extends ScrollPhysics {
   }
 
   @override
-  Simulation? createBallisticSimulation(ScrollMetrics position, double velocity) {
+  Simulation? createBallisticSimulation(
+      ScrollMetrics position, double velocity) {
     assert(
-      position is _FixedExtentScrollPosition,
-      'CircleFixedExtentScrollPhysics can only be used with Scrollables that uses '
-      'the FixedExtentScrollController'
-    );
+        position is _FixedExtentScrollPosition,
+        'CircleFixedExtentScrollPhysics can only be used with Scrollables that uses '
+        'the FixedExtentScrollController');
 
-    final _FixedExtentScrollPosition metrics = position as _FixedExtentScrollPosition;
+    final _FixedExtentScrollPosition metrics =
+        position as _FixedExtentScrollPosition;
 
     // Scenario 1:
     // If we're out of range and not headed back in range, defer to the parent
@@ -491,9 +502,10 @@ class CircleFixedExtentScrollPhysics extends ScrollPhysics {
     // If it was going to end up past the scroll extent, defer back to the
     // parent physics' ballistics again which should put us on the scrollable's
     // boundary.
-    if (testFrictionSimulation != null
-        && (testFrictionSimulation.x(double.infinity) == metrics.minScrollExtent
-            || testFrictionSimulation.x(double.infinity) == metrics.maxScrollExtent)) {
+    if (testFrictionSimulation != null &&
+        (testFrictionSimulation.x(double.infinity) == metrics.minScrollExtent ||
+            testFrictionSimulation.x(double.infinity) ==
+                metrics.maxScrollExtent)) {
       return super.createBallisticSimulation(metrics, velocity);
     }
 
@@ -511,8 +523,8 @@ class CircleFixedExtentScrollPhysics extends ScrollPhysics {
     // Scenario 3:
     // If there's no velocity and we're already at where we intend to land,
     // do nothing.
-    if (velocity.abs() < tolerance.velocity
-        && (settlingPixels - metrics.pixels).abs() < tolerance.distance) {
+    if (velocity.abs() < tolerance.velocity &&
+        (settlingPixels - metrics.pixels).abs() < tolerance.distance) {
       return null;
     }
 
@@ -536,16 +548,16 @@ class CircleFixedExtentScrollPhysics extends ScrollPhysics {
     // Scenario 5:
     // Create a new spring simulation on the item closest to the natural stopping point.
     return SpringSimulation(
-        SpringDescription.withDampingRatio(
-          mass: 0.5,
-          stiffness: 100.0,
-          ratio: 0.9,
-        ),
-        metrics.pixels,
-        settlingPixels,
-        velocity,
-        tolerance: tolerance,
-      );
+      SpringDescription.withDampingRatio(
+        mass: 0.5,
+        stiffness: 100.0,
+        ratio: 0.9,
+      ),
+      metrics.pixels,
+      settlingPixels,
+      velocity,
+      tolerance: tolerance,
+    );
   }
 }
 
@@ -574,17 +586,18 @@ class CircleListScrollView extends StatefulWidget {
     required List<Widget> children,
     this.axis = Axis.vertical,
     this.radius = 100,
-  }) : assert(children != null),
-       assert(itemExtent != null),
-       assert(itemExtent > 0),
-       assert(clipToSize != null),
-       assert(renderChildrenOutsideViewport != null),
-       assert(
-         !renderChildrenOutsideViewport || !clipToSize,
-         RenderCircleListViewport.clipToSizeAndRenderChildrenOutsideViewportConflict,
-       ),
-       childDelegate = CircleListChildListDelegate(children: children),
-       super(key: key);
+  })  : assert(children != null),
+        assert(itemExtent != null),
+        assert(itemExtent > 0),
+        assert(clipToSize != null),
+        assert(renderChildrenOutsideViewport != null),
+        assert(
+          !renderChildrenOutsideViewport || !clipToSize,
+          RenderCircleListViewport
+              .clipToSizeAndRenderChildrenOutsideViewportConflict,
+        ),
+        childDelegate = CircleListChildListDelegate(children: children),
+        super(key: key);
 
   /// Constructs a list in which children are scrolled a wheel. Its children
   /// are managed by a delegate and are lazily built during layout.
@@ -599,16 +612,17 @@ class CircleListScrollView extends StatefulWidget {
     required this.childDelegate,
     this.axis = Axis.vertical,
     this.radius = 100,
-  }) : assert(childDelegate != null),
-       assert(itemExtent != null),
-       assert(itemExtent > 0),
-       assert(clipToSize != null),
-       assert(renderChildrenOutsideViewport != null),
-       assert(
-         !renderChildrenOutsideViewport || !clipToSize,
-         RenderCircleListViewport.clipToSizeAndRenderChildrenOutsideViewportConflict,
-       ),
-       super(key: key);
+  })  : assert(childDelegate != null),
+        assert(itemExtent != null),
+        assert(itemExtent > 0),
+        assert(clipToSize != null),
+        assert(renderChildrenOutsideViewport != null),
+        assert(
+          !renderChildrenOutsideViewport || !clipToSize,
+          RenderCircleListViewport
+              .clipToSizeAndRenderChildrenOutsideViewportConflict,
+        ),
+        super(key: key);
 
   /// Typically a [FixedExtentScrollController] used to control the current item.
   ///
@@ -670,7 +684,8 @@ class _CircleListScrollViewState extends State<CircleListScrollView> {
     super.initState();
     scrollController = widget.controller ?? FixedExtentScrollController();
     if (widget.controller is FixedExtentScrollController) {
-      final FixedExtentScrollController controller = widget.controller as FixedExtentScrollController;
+      final FixedExtentScrollController controller =
+          widget.controller as FixedExtentScrollController;
       _lastReportedItemIndex = controller.initialItem;
     }
   }
@@ -691,22 +706,26 @@ class _CircleListScrollViewState extends State<CircleListScrollView> {
   Widget build(BuildContext context) {
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification notification) {
-        if (notification.depth == 0
-            && widget.onSelectedItemChanged != null
-            && notification is ScrollUpdateNotification
-            && notification.metrics is FixedExtentMetrics) {
-          final FixedExtentMetrics metrics = notification.metrics as FixedExtentMetrics;
+        if (notification.depth == 0 &&
+            widget.onSelectedItemChanged != null &&
+            notification is ScrollUpdateNotification &&
+            notification.metrics is FixedExtentMetrics) {
+          final FixedExtentMetrics metrics =
+              notification.metrics as FixedExtentMetrics;
           final int currentItemIndex = metrics.itemIndex;
           if (currentItemIndex != _lastReportedItemIndex) {
             _lastReportedItemIndex = currentItemIndex;
-            final int trueIndex = widget.childDelegate.trueIndexOf(currentItemIndex);
+            final int trueIndex =
+                widget.childDelegate.trueIndexOf(currentItemIndex);
             widget.onSelectedItemChanged!(trueIndex);
           }
         }
         return false;
       },
       child: _FixedExtentScrollable(
-        axisDirection: widget.axis == Axis.horizontal ? AxisDirection.right : AxisDirection.down,
+        axisDirection: widget.axis == Axis.horizontal
+            ? AxisDirection.right
+            : AxisDirection.down,
         controller: scrollController,
         physics: widget.physics,
         itemExtent: widget.itemExtent,
@@ -727,7 +746,8 @@ class _CircleListScrollViewState extends State<CircleListScrollView> {
 }
 
 /// Element that supports building children lazily for [ListWheelViewport].
-class CircleListElement extends RenderObjectElement implements CircleListChildManager {
+class CircleListElement extends RenderObjectElement
+    implements CircleListChildManager {
   /// Creates an element that lazily builds children for the given widget.
   CircleListElement(CircleListViewport widget) : super(widget);
 
@@ -735,7 +755,8 @@ class CircleListElement extends RenderObjectElement implements CircleListChildMa
   CircleListViewport get widget => super.widget as CircleListViewport;
 
   @override
-  RenderCircleListViewport get renderObject => super.renderObject as RenderCircleListViewport;
+  RenderCircleListViewport get renderObject =>
+      super.renderObject as RenderCircleListViewport;
 
   // We inflate widgets at two different times:
   //  1. When we ourselves are told to rebuild (see performRebuild).
@@ -749,7 +770,8 @@ class CircleListElement extends RenderObjectElement implements CircleListChildMa
 
   /// The map containing all active child elements. SplayTreeMap is used so that
   /// we have all elements ordered and iterable by their keys.
-  final SplayTreeMap<int, Element> _childElements = SplayTreeMap<int, Element>();
+  final SplayTreeMap<int, Element> _childElements =
+      SplayTreeMap<int, Element>();
 
   @override
   void update(CircleListViewport newWidget) {
@@ -758,8 +780,8 @@ class CircleListElement extends RenderObjectElement implements CircleListChildMa
     final CircleListChildDelegate newDelegate = newWidget.childDelegate;
     final CircleListChildDelegate oldDelegate = oldWidget.childDelegate;
     if (newDelegate != oldDelegate &&
-        (newDelegate.runtimeType != oldDelegate.runtimeType || newDelegate.shouldRebuild(oldDelegate)))
-      performRebuild();
+        (newDelegate.runtimeType != oldDelegate.runtimeType ||
+            newDelegate.shouldRebuild(oldDelegate))) performRebuild();
   }
 
   @override
@@ -769,14 +791,14 @@ class CircleListElement extends RenderObjectElement implements CircleListChildMa
   void performRebuild() {
     _childWidgets.clear();
     super.performRebuild();
-    if (_childElements.isEmpty)
-      return;
+    if (_childElements.isEmpty) return;
 
     final int firstIndex = _childElements.firstKey()!;
     final int lastIndex = _childElements.lastKey()!;
 
     for (int index = firstIndex; index <= lastIndex; ++index) {
-      final Element? newChild = updateChild(_childElements[index], retrieveWidget(index), index);
+      final Element? newChild =
+          updateChild(_childElements[index], retrieveWidget(index), index);
       if (newChild != null) {
         _childElements[index] = newChild;
       } else {
@@ -791,19 +813,20 @@ class CircleListElement extends RenderObjectElement implements CircleListChildMa
   /// will be cached. However when the element is rebuilt, the cache will be
   /// cleared.
   Widget? retrieveWidget(int index) {
-    return _childWidgets.putIfAbsent(index, () => widget.childDelegate.build(this, index));
+    return _childWidgets.putIfAbsent(
+        index, () => widget.childDelegate.build(this, index));
   }
 
   @override
   bool childExistsAt(int index) => retrieveWidget(index) != null;
 
   @override
-  void createChild(int index, { required RenderBox? after }) {
+  void createChild(int index, {required RenderBox? after}) {
     owner!.buildScope(this, () {
       final bool insertFirst = after == null;
       assert(insertFirst || _childElements[index - 1] != null);
       final Element? newChild =
-        updateChild(_childElements[index], retrieveWidget(index), index);
+          updateChild(_childElements[index], retrieveWidget(index), index);
       if (newChild != null) {
         _childElements[index] = newChild;
       } else {
@@ -826,28 +849,30 @@ class CircleListElement extends RenderObjectElement implements CircleListChildMa
 
   @override
   Element? updateChild(Element? child, Widget? newWidget, dynamic newSlot) {
-    final CircleListParentData? oldParentData = child?.renderObject?.parentData as CircleListParentData?;
+    final CircleListParentData? oldParentData =
+        child?.renderObject?.parentData as CircleListParentData?;
     final Element? newChild = super.updateChild(child, newWidget, newSlot);
-    final CircleListParentData? newParentData = newChild?.renderObject?.parentData as CircleListParentData?;
+    final CircleListParentData? newParentData =
+        newChild?.renderObject?.parentData as CircleListParentData?;
     if (newParentData != null) {
       newParentData.index = newSlot;
-      if (oldParentData != null)
-        newParentData.offset = oldParentData.offset;
+      if (oldParentData != null) newParentData.offset = oldParentData.offset;
     }
 
     return newChild;
   }
 
   @override
-  void insertChildRenderObject(RenderObject child, int slot) {
+  void insertRenderObjectChild(RenderObject child, int slot) {
     final RenderCircleListViewport renderObject = this.renderObject;
     assert(renderObject.debugValidateChild(child));
-    renderObject.insert(child as RenderBox, after: _childElements[slot - 1]?.renderObject as RenderBox?);
+    renderObject.insert(child as RenderBox,
+        after: _childElements[slot - 1]?.renderObject as RenderBox?);
     assert(renderObject == this.renderObject);
   }
 
   @override
-  void moveChildRenderObject(RenderObject child, dynamic slot) {
+  void moveRenderObjectChild(RenderObject child, dynamic _, dynamic __) {
     const String moveChildRenderObjectErrorMessage =
         'Currently we maintain the list in contiguous increasing order, so '
         'moving children around is not allowed.';
@@ -855,7 +880,7 @@ class CircleListElement extends RenderObjectElement implements CircleListChildMa
   }
 
   @override
-  void removeChildRenderObject(RenderObject child) {
+  void removeRenderObjectChild(RenderObject child, dynamic _) {
     assert(child.parent == renderObject);
     renderObject.remove(child as RenderBox);
   }
@@ -870,8 +895,8 @@ class CircleListElement extends RenderObjectElement implements CircleListChildMa
   @override
   void forgetChild(Element child) {
     _childElements.remove(child.slot);
+    super.forgetChild(child);
   }
-
 }
 
 /// A viewport showing a subset of children on a wheel.
@@ -908,18 +933,19 @@ class CircleListViewport extends RenderObjectWidget {
     required this.childDelegate,
     required this.axis,
     this.radius = 100,
-  }) : assert(childDelegate != null),
-       assert(offset != null),
-       assert(itemExtent != null),
-       assert(itemExtent > 0),
-       assert(clipToSize != null),
-       assert(renderChildrenOutsideViewport != null),
-       assert(
-         !renderChildrenOutsideViewport || !clipToSize,
-         RenderCircleListViewport.clipToSizeAndRenderChildrenOutsideViewportConflict,
-       ),
-       assert(axis != null),
-       super(key: key);
+  })  : assert(childDelegate != null),
+        assert(offset != null),
+        assert(itemExtent != null),
+        assert(itemExtent > 0),
+        assert(clipToSize != null),
+        assert(renderChildrenOutsideViewport != null),
+        assert(
+          !renderChildrenOutsideViewport || !clipToSize,
+          RenderCircleListViewport
+              .clipToSizeAndRenderChildrenOutsideViewportConflict,
+        ),
+        assert(axis != null),
+        super(key: key);
 
   /// {@macro flutter.rendering.wheelList.itemExtent}
   final double itemExtent;
@@ -959,7 +985,8 @@ class CircleListViewport extends RenderObjectWidget {
   }
 
   @override
-  void updateRenderObject(BuildContext context, RenderCircleListViewport renderObject) {
+  void updateRenderObject(
+      BuildContext context, RenderCircleListViewport renderObject) {
     renderObject
       ..axis = axis
       ..radius = radius
